@@ -16,10 +16,8 @@ add_requires("_Log_")
 
 for _, game_version in ipairs(skyrim_versions) do
     add_requires("skyrim-commonlib-" .. game_version)
-    add_requires("SkyrimScripting.Logging", { configs = { commonlib = "skyrim-commonlib-" .. game_version, use_log_library = true, use_skse_plugin_info_library = true, include_repo_mrowrlib = true }})
+    add_requires("SkyrimScripting.Logging", { configs = { commonlib = "skyrim-commonlib-" .. game_version, use_log_library = true, use_skse_plugin_info_library = true, use_skyrimscripting_entrypoint = true, include_repo_mrowrlib = true }})
 end
-
-example_plugin_number = 1
 
 for _, game_version in ipairs(skyrim_versions) do
     target("StaticLibrary-" .. game_version:upper())
@@ -28,22 +26,25 @@ for _, game_version in ipairs(skyrim_versions) do
         add_includedirs("include", { public = true }) -- Your library's own include path
         add_packages("skyrim-commonlib-" .. game_version)
         add_packages("global_macro_functions", { public = true })
+end
 
-    target("_SksePlugin-" .. game_version:upper() .. "-" .. example_plugin_number)
-        set_basename(mod_info.name .. "-" .. game_version:upper())
-        add_files("plugin" .. example_plugin_number .. ".cpp")
-        add_packages("skyrim-commonlib-" .. game_version)
-        add_rules("@skyrim-commonlib-" .. game_version .. "/plugin", {
-            mod_name = mod_info.name .. " (" .. game_version:upper() .. ")",
-            mods_folders = mod_info.mods_folders or "",
-            mod_files = mod_info.mod_files,
-            name = mod_info.name,
-            version = mod_info.version,
-            author = mod_info.author,
-            email = mod_info.email
-        })
-        add_deps("StaticLibrary-" .. game_version:upper())
-        add_packages("_Log_", "SkyrimScripting.Logging", { public = true })
-
-    example_plugin_number = example_plugin_number + 1
+number_of_plugins = 2
+for plugin_number = 1, number_of_plugins do
+    for _, game_version in ipairs(skyrim_versions) do
+        target("_SksePlugin-" .. game_version:upper() .. "-" .. plugin_number)
+            set_basename(mod_info.name .. "-" .. plugin_number .. "-" .. game_version:upper())
+            add_files("plugin" .. plugin_number .. ".cpp")
+            add_packages("skyrim-commonlib-" .. game_version)
+            add_rules("@skyrim-commonlib-" .. game_version .. "/plugin", {
+                mod_name = mod_info.name .. "-" .. plugin_number .. " (" .. game_version:upper() .. ")",
+                mods_folders = mod_info.mods_folders or "",
+                mod_files = mod_info.mod_files,
+                name = mod_info.name .. "-" .. plugin_number,
+                version = mod_info.version,
+                author = mod_info.author,
+                email = mod_info.email
+            })
+            add_deps("StaticLibrary-" .. game_version:upper())
+            add_packages("_Log_", "SkyrimScripting.Logging", { public = true })
+    end
 end

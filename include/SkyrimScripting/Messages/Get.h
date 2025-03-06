@@ -26,11 +26,11 @@ namespace SkyrimScripting::Messages {
 
         std::thread([=]() {
             auto message = make_message();
-            message->SetText(messageText.data());
+            message->set_text(messageText.data());
             MessagesController::GetSingleton().SendGetRequest(
                 recipient, std::move(message),
                 [promise](Message* message) {
-                    if (auto* data = message->GetData()) {
+                    if (auto* data = message->data()) {
                         auto dataAddress = reinterpret_cast<std::uintptr_t>(data);
                         _Log_(
                             "Response Callback received and its data is at address {:x}",

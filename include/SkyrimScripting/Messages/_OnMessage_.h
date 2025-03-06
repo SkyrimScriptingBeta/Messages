@@ -14,4 +14,4 @@
             .RegisterMessageListener,                                  \
         SkyrimScripting::Messages::Message*)
 
-#define _OnMessage_ __OnMessage__(DEFAULT)
+#define _OnMessage_ __OnMessage__(SkyrimScriptingMessages_OnMessage)

@@ -22,6 +22,6 @@ namespace SkyrimScripting::Messages {
 
     template <typename T>
     inline void Reply(Message* message, T data) {
-        Reply(message->GetSender(), message->GetReplyID(), (void*)data);
+        Reply(message->sender(), message->reply_id(), (void*)data);
     }
 }

@@ -1,27 +1,24 @@
-#include <RE/Skyrim.h>
-#include <SKSE/SKSE.h>
+#include <SkyrimScripting/Entrypoint.h>
 #include <SkyrimScripting/Logging.h>
 #include <SkyrimScripting/Messages.h>
-#include <_Log_.h>
 
 _OnMessage_(SkyrimScripting::Messages::Message* message) {
-    _Log_("Received message from sender [{}]: '{}'", message->GetSender(), message->GetText());
+    PrintToConsole("Received message from sender [{}]: '{}'", message->sender(), message->text());
 }
 
-extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface* a_skse) {
-    SKSE::Init(a_skse);
+_SKSEPlugin_Init_ {
+    _Log_("INIT: Plugin1");
 
     SKSE::GetMessagingInterface()->RegisterListener(
-        "SKSE",
+        nullptr,
         [](SKSE::MessagingInterface::Message* a_msg) {
+            _Log_("Received message from sender [{}]", a_msg->sender);
+            SkyrimScripting::Messages::HandleMessage(a_msg->sender, a_msg);
             if (a_msg->type == SKSE::MessagingInterface::kDataLoaded) {
                 if (auto* consoleLog = RE::ConsoleLog::GetSingleton()) {
-                    consoleLog->Print("Hello, from 'Messages'");
-                    // SkyrimScripting::Me
+                    PrintToConsole("LOADED: Plugin1");
                 }
             }
         }
     );
-
-    return true;
 }

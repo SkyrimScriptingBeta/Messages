@@ -18,14 +18,14 @@ namespace SkyrimScripting::Messages {
 
     inline void Send(
         std::string_view recipient, std::string_view text = "", void* data = nullptr,
-        bool isResponse = false, bool isRequest = false, CallbackID replyId = 0
+        bool is_response = false, bool is_request = false, CallbackID replyId = 0
     ) {
         auto message = make_message();
-        message->SetText(text.data());
-        message->SetData(data);
-        message->SetIsResponse(isResponse);
-        message->SetIsRequest(isRequest);
-        message->SetReplyID(replyId);
+        message->set_text(text.data());
+        message->set_data(data);
+        message->set_is_response(is_response);
+        message->set_is_request(is_request);
+        message->set_reply_id(replyId);
         Send(recipient, std::move(message));
     }
 }

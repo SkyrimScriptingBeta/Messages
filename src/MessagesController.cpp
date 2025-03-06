@@ -27,8 +27,8 @@ namespace SkyrimScripting::Messages {
         _Log_("SendGetRequest() to {}", recipient);
 
         auto callbackID = _nextCallbackID++;
-        message->SetIsRequest();
-        message->SetReplyID(callbackID);
+        message->set_is_request();
+        message->set_reply_id(callbackID);
         auto outboundRequest = std::unique_ptr<OutboundRequestMessage>(new OutboundRequestMessage{
             .replyId         = callbackID,
             .message         = std::move(message),
@@ -59,13 +59,13 @@ namespace SkyrimScripting::Messages {
     ) {
         if (skseMessage->type == SKYRIM_SCRIPTING_MESSAGE_TYPE) {
             if (auto* message = static_cast<Message*>(skseMessage->data)) {
-                message->SetSender(skseMessage->sender);
+                message->set_sender(skseMessage->sender);
                 for (auto& messageListener : _messageListeners) messageListener(message);
-                if (message->IsResponse()) {
-                    _Log_("Received response to message '{}'", message->GetReplyID());
-                    auto it = _outboundRequests.find(message->GetReplyID());
+                if (message->is_response()) {
+                    _Log_("Received response to message '{}'", message->reply_id());
+                    auto it = _outboundRequests.find(message->reply_id());
                     if (it != _outboundRequests.end()) {
-                        _Log_("Processing response for {}", message->GetReplyID());
+                        _Log_("Processing response for {}", message->reply_id());
                         it->second->receiptCallback(message);
                         _outboundRequests.erase(it);
                     }
