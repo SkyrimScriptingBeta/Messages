@@ -4,7 +4,7 @@
 
 #include <string_view>  // IWYU pragma: keep
 
-#include "../Message.h"          // IWYU pragma: keep
+#include "Message.h"             // IWYU pragma: keep
 #include "MessagesController.h"  // IWYU pragma: keep
 
 #define __OnMessage__(scopeSymbol) \
@@ -12,6 +12,6 @@
         scopeSymbol,                                                               \
          SkyrimScripting::Messages::MessagesController::GetSingleton()   \
             .RegisterMessageListener,                                  \
-        SkyrimScripting::Message*)
+        SkyrimScripting::Messages::Message*)
 
 #define _OnMessage_ __OnMessage__(DEFAULT)

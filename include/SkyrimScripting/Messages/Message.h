@@ -7,12 +7,12 @@ namespace SkyrimScripting::Messages {
     struct Message {
         virtual ~Message() = default;
 
-        virtual const char* GetSender()  = 0;
-        virtual const char* GetText()    = 0;
-        virtual void*       GetData()    = 0;
-        virtual bool        IsResponse() = 0;
-        virtual bool        IsRequest()  = 0;
-        virtual CallbackID  GetReplyID() = 0;
+        virtual const char* GetSender() const  = 0;
+        virtual const char* GetText() const    = 0;
+        virtual void*       GetData() const    = 0;
+        virtual bool        IsResponse() const = 0;
+        virtual bool        IsRequest() const  = 0;
+        virtual CallbackID  GetReplyID() const = 0;
 
         virtual void SetSender(const char* sender)    = 0;
         virtual void SetText(const char* text)        = 0;

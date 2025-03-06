@@ -2,11 +2,11 @@
 
 #include <SKSE/SKSE.h>
 
-// #if __has_include(<_Log_.h>)
-//     #include <_Log_.h>
-// #else
-//     #define _Log_(...)
-// #endif
+#if __has_include(<_Log_.h>)
+    #include <_Log_.h>
+#else
+    #define _Log_(...)
+#endif
 
 #include <cstdint>
 #include <future>
@@ -32,10 +32,10 @@ namespace SkyrimScripting::Messages {
                 [promise](Message* message) {
                     if (auto* data = message->GetData()) {
                         auto dataAddress = reinterpret_cast<std::uintptr_t>(data);
-                        // _Log_(
-                        //     "Response Callback received and its data is at address {:x}",
-                        //     dataAddress
-                        // );
+                        _Log_(
+                            "Response Callback received and its data is at address {:x}",
+                            dataAddress
+                        );
                         if (data != nullptr) {
                             promise->set_value(static_cast<T>(data));
                             return;
@@ -57,10 +57,10 @@ namespace SkyrimScripting::Messages {
         if (timeoutMs != 0) {
             auto status = future.wait_for(std::chrono::milliseconds(timeoutMs));
             if (status == std::future_status::timeout) {
-                // _Log_(
-                //     "Get request to '{}' ('{}') timed out (after {}ms)", recipient, messageText,
-                //     timeoutMs
-                // );
+                _Log_(
+                    "Get request to '{}' ('{}') timed out (after {}ms)", recipient, messageText,
+                    timeoutMs
+                );
                 return {};
             }
         }

@@ -8,8 +8,3 @@
 #include "Messages/Reply.h"          // IWYU pragma: keep
 #include "Messages/Send.h"           // IWYU pragma: keep
 #include "Messages/_OnMessage_.h"    // IWYU pragma: keep
-
-
-namespace SkyrimScripting {
-    using Message = Messages::Message;
-}

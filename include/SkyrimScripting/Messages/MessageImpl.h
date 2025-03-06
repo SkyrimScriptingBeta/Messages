@@ -15,12 +15,12 @@ namespace SkyrimScripting::Messages {
         CallbackID  _replyId    = 0;
 
     public:
-        const char* GetSender() override;
-        const char* GetText() override;
-        void*       GetData() override;
-        bool        IsResponse() override;
-        bool        IsRequest() override;
-        CallbackID  GetReplyID() override;
+        const char* GetSender() const override;
+        const char* GetText() const override;
+        void*       GetData() const override;
+        bool        IsResponse() const override;
+        bool        IsRequest() const override;
+        CallbackID  GetReplyID() const override;
 
         void SetSender(const char* sender) override;
         void SetText(const char* text) override;
