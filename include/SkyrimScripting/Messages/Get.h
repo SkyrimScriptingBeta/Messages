@@ -2,12 +2,6 @@
 
 #include <SKSE/SKSE.h>
 
-#if __has_include(<SKSE::log::info.h>)
-    #include <SKSE::log::info.h>
-#else
-    #define SKSE ::log::info(...)
-#endif
-
 #include <cstdint>
 #include <future>
 #include <optional>

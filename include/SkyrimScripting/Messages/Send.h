@@ -10,9 +10,17 @@
 
 namespace SkyrimScripting::Messages {
 
+    // TODO: make these in .cpp cause they aren't template functions!
+
     inline void Send(std::string_view recipient, std::unique_ptr<Message> message) {
         SKSE::GetMessagingInterface()->Dispatch(
             SKYRIM_SCRIPTING_MESSAGE_TYPE, (void*)message.get(), sizeof(void*), recipient.data()
+        );
+    }
+
+    inline void Send(std::unique_ptr<Message> message) {
+        SKSE::GetMessagingInterface()->Dispatch(
+            SKYRIM_SCRIPTING_MESSAGE_TYPE, (void*)message.get(), sizeof(void*), nullptr
         );
     }
 
