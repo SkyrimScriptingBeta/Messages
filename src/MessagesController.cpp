@@ -1,12 +1,8 @@
 #include "SkyrimScripting/Messages/MessagesController.h"
 
-#include "SkyrimScripting/Messages/MessageType.h"
+#include <SKSE/SKSE.h>
 
-#if __has_include(<_Log_.h>)
-    #include <_Log_.h>
-#else
-    #define _Log_(...)
-#endif
+#include "SkyrimScripting/Messages/MessageType.h"
 
 namespace SkyrimScripting::Messages {
 
@@ -24,7 +20,7 @@ namespace SkyrimScripting::Messages {
         std::string_view recipient, std::unique_ptr<Message> message,
         std::function<void(Message*)> receiptCallback
     ) {
-        _Log_("SendGetRequest() to {}", recipient);
+        SKSE::log::info("SendGetRequest() to {}", recipient);
 
         auto callbackID = _nextCallbackID++;
         message->set_is_request();
@@ -38,9 +34,9 @@ namespace SkyrimScripting::Messages {
 
         auto* outboundRequestPtr = _outboundRequests[callbackID].get();
 
-        _Log_(
+        SKSE::log::info(
             "Dispatching GET request to {} with message '{}' [Callback ID {}]", recipient,
-            outboundRequestPtr->message->GetText(), callbackID
+            outboundRequestPtr->message->text(), callbackID
         );
         if (SKSE::GetMessagingInterface()->Dispatch(
                 SKYRIM_SCRIPTING_MESSAGE_TYPE, (void*)outboundRequestPtr->message.get(),
@@ -48,7 +44,7 @@ namespace SkyrimScripting::Messages {
             ))
             return true;
         else {
-            _Log_("Failed to dispatch GET request to {}", recipient);
+            SKSE::log::info("Failed to dispatch GET request to {}", recipient);
             _outboundRequests.erase(callbackID);
             return false;
         }
@@ -62,10 +58,10 @@ namespace SkyrimScripting::Messages {
                 message->set_sender(skseMessage->sender);
                 for (auto& messageListener : _messageListeners) messageListener(message);
                 if (message->is_response()) {
-                    _Log_("Received response to message '{}'", message->reply_id());
+                    SKSE::log::info("Received response to message '{}'", message->reply_id());
                     auto it = _outboundRequests.find(message->reply_id());
                     if (it != _outboundRequests.end()) {
-                        _Log_("Processing response for {}", message->reply_id());
+                        SKSE::log::info("Processing response for {}", message->reply_id());
                         it->second->receiptCallback(message);
                         _outboundRequests.erase(it);
                     }
