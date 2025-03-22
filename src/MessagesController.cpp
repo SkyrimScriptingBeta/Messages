@@ -2,6 +2,7 @@
 
 #include <SKSE/SKSE.h>
 
+#include "SkyrimScripting/Messages/HandleMessage.h"
 #include "SkyrimScripting/Messages/MessageType.h"
 
 namespace SkyrimScripting::Messages {
@@ -9,6 +10,10 @@ namespace SkyrimScripting::Messages {
     MessagesController& MessagesController::GetSingleton() {
         static MessagesController instance;
         return instance;
+    }
+
+    void HandleMessage(const char* sender, SKSE::MessagingInterface::Message* message) {
+        MessagesController::GetSingleton().HandleIncomingMessage(message);
     }
 
     void MessagesController::RegisterMessageListener(std::function<void(Message*)> messageListener
@@ -50,9 +55,7 @@ namespace SkyrimScripting::Messages {
         }
     }
 
-    void MessagesController::HandleIncomingMessage(
-        const char* sender, SKSE::MessagingInterface::Message* skseMessage
-    ) {
+    void MessagesController::HandleIncomingMessage(SKSE::MessagingInterface::Message* skseMessage) {
         if (skseMessage->type == SKYRIM_SCRIPTING_MESSAGE_TYPE) {
             if (auto* message = static_cast<Message*>(skseMessage->data)) {
                 message->set_sender(skseMessage->sender);

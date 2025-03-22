@@ -1,10 +1,7 @@
 #pragma once
 
-#include "MessagesController.h"
+#include <SKSE/SKSE.h>
 
 namespace SkyrimScripting::Messages {
-
-    inline void HandleMessage(const char* sender, SKSE::MessagingInterface::Message* message) {
-        MessagesController::GetSingleton().HandleIncomingMessage(sender, message);
-    }
+    void HandleMessage(const char* sender, SKSE::MessagingInterface::Message* message);
 }

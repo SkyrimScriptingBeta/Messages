@@ -28,8 +28,6 @@ namespace SkyrimScripting::Messages {
             std::function<void(Message*)> receiptCallback
         );
 
-        void HandleIncomingMessage(
-            const char* sender, SKSE::MessagingInterface::Message* skseMessage
-        );
+        void HandleIncomingMessage(SKSE::MessagingInterface::Message* skseMessage);
     };
 }

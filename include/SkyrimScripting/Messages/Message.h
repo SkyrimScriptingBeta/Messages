@@ -4,6 +4,9 @@
 
 namespace SkyrimScripting::Messages {
 
+    /*
+     * Pure virtual interface to represent a message.
+     */
     struct Message {
         virtual ~Message() = default;
 

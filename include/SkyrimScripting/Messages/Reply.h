@@ -5,15 +5,11 @@
 #include <string_view>
 
 #include "CallbackID.h"
-#include "MakeMessage.h"
-#include "Send.h"
+#include "Message.h"
 
 namespace SkyrimScripting::Messages {
 
-    inline void Reply(std::string_view recipient, CallbackID replyID, void* data = nullptr) {
-        auto message = make_response_message(data, replyID);
-        Send(recipient, std::move(message));
-    }
+    void Reply(std::string_view recipient, CallbackID replyID, void* data = nullptr);
 
     template <typename T>
     inline void Reply(std::string_view recipient, CallbackID replyID, T data) {
