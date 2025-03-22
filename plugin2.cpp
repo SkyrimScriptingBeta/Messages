@@ -2,16 +2,35 @@
 #include <SKSE/SKSE.h>
 #include <SkyrimScripting/Messages.h>
 
+#include "shared_header.h"
+
 const auto THIS_PLUGIN_NAME  = "Test plugin 2 for SkyrimScripting.Messages";
 const auto OTHER_PLUGIN_NAME = "Test plugin 1 for SkyrimScripting.Messages";
+
+SomeStruct plugin2Struct = {420, "Four-twenty"};
 
 void on_all_plugins_loaded() {
     // Send a message to the other plugin
     SkyrimScripting::Messages::Send(OTHER_PLUGIN_NAME, "Hello from Plugin 2!");
+
+    // This is BLOCKING, so be careful
+    auto plugin1Struct =
+        SkyrimScripting::Messages::Get<SomeStruct*>(OTHER_PLUGIN_NAME, "GimmeYourStruct");
+    if (plugin1Struct.has_value()) {
+        SKSE::log::info(
+            "Received struct from Plugin 1: a={}, b='{}'", plugin1Struct.value()->a,
+            plugin1Struct.value()->b
+        );
+    } else {
+        SKSE::log::info("Failed to receive struct from Plugin 1");
+    }
 }
 
 OnMessage(SkyrimScripting::Messages::Message* message) {
     SKSE::log::info("Received message from '{}': '{}'", message->sender(), message->text());
+    if (message->is_request() && strcmp(message->text(), "GimmeYourStruct") == 0) {
+        SkyrimScripting::Messages::Reply(message, &plugin2Struct);
+    }
 }
 
 extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface* a_skse) {

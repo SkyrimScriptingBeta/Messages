@@ -3,6 +3,7 @@
 #include <SKSE/SKSE.h>
 
 #include <cstdint>
+#include <functional>
 #include <future>
 #include <optional>
 #include <string_view>
@@ -14,7 +15,10 @@
 namespace SkyrimScripting::Messages {
 
     template <typename T>
-    inline std::future<T> GetAsync(std::string_view recipient, std::string_view messageText) {
+    inline std::future<T> GetAsync(
+        std::string_view recipient, std::string_view messageText,
+        std::optional<std::function<void(T)>> callback = std::nullopt
+    ) {
         auto promise = std::make_shared<std::promise<T>>();
         auto future  = promise->get_future();
 
@@ -23,18 +27,20 @@ namespace SkyrimScripting::Messages {
             message->set_text(messageText.data());
             MessagesController::GetSingleton().SendGetRequest(
                 recipient, std::move(message),
-                [promise](Message* message) {
+                [promise, callback](Message* message) {
                     if (auto* data = message->data()) {
                         auto dataAddress = reinterpret_cast<std::uintptr_t>(data);
-                        SKSE::log::info(
+                        SKSE::log::trace(
                             "Response Callback received and its data is at address {:x}",
                             dataAddress
                         );
                         if (data != nullptr) {
+                            if (callback.has_value()) callback.value()(static_cast<T>(data));
                             promise->set_value(static_cast<T>(data));
                             return;
                         }
                     }
+                    if (callback.has_value()) callback.value()(T{});
                     promise->set_value({});
                 }
             );
