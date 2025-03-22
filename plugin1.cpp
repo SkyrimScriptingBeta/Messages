@@ -38,6 +38,10 @@ OnMessage(SkyrimScripting::Messages::Message* message) {
 
 extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface* a_skse) {
     SKSE::Init(a_skse);
+
+    // Add this as a helper to logging...
+    spdlog::default_logger()->set_level(spdlog::level::trace);
+
     // Listen for SKSE event messages
     SKSE::GetMessagingInterface()->RegisterListener(
         "SKSE",
