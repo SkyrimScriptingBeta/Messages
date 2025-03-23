@@ -4,6 +4,7 @@
 
 #include "SkyrimScripting/Messages/HandleMessage.h"
 #include "SkyrimScripting/Messages/MessageType.h"
+#include "SkyrimScripting/Messages/Reply.h"
 
 namespace SkyrimScripting::Messages {
 
@@ -19,6 +20,12 @@ namespace SkyrimScripting::Messages {
     void MessagesController::RegisterMessageListener(std::function<void(Message*)> messageListener
     ) {
         _messageListeners.emplace_back(std::move(messageListener));
+    }
+
+    void MessagesController::RegisterGetHandler(
+        std::string_view messageText, std::function<void*()> messageListener
+    ) {
+        _getHandlers.emplace(messageText, std::move(messageListener));
     }
 
     bool MessagesController::SendGetRequest(
@@ -69,6 +76,16 @@ namespace SkyrimScripting::Messages {
                         );
                         it->second->receiptCallback(message);
                         _outboundRequests.erase(it);
+                    }
+                } else if (message->is_request()) {
+                    auto it = _getHandlers.find(message->text());
+                    if (it != _getHandlers.end()) {
+                        auto response_value = it->second();
+                        SKSE::log::trace(
+                            "Returning value for text '{}', value: '{}'", message->text(),
+                            response_value
+                        );
+                        SkyrimScripting::Messages::Reply(message, response_value);
                     }
                 }
             }

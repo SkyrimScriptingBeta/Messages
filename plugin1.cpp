@@ -7,7 +7,10 @@
 const auto THIS_PLUGIN_NAME  = "Test plugin 1 for SkyrimScripting.Messages";
 const auto OTHER_PLUGIN_NAME = "Test plugin 2 for SkyrimScripting.Messages";
 
+// Let's make this struct available via a nice macro that auto returns it when requested...
 SomeStruct plugin1Struct = {69, "Sixty-nine"};
+
+OnGet("TheCoolStruct") { return &plugin1Struct; }
 
 void on_all_plugins_loaded() {
     // Send a message to the other plugin
@@ -27,13 +30,6 @@ void on_all_plugins_loaded() {
             }
         }
     );
-}
-
-OnMessage(SkyrimScripting::Messages::Message* message) {
-    SKSE::log::info("Received message from '{}': '{}'", message->sender(), message->text());
-    if (message->is_request() && strcmp(message->text(), "GimmeYourStruct") == 0) {
-        SkyrimScripting::Messages::Reply(message, &plugin1Struct);
-    }
 }
 
 extern "C" __declspec(dllexport) bool SKSEPlugin_Load(const SKSE::LoadInterface* a_skse) {

@@ -15,10 +15,11 @@ void on_all_plugins_loaded() {
 
     // This is BLOCKING, so be careful
     auto plugin1Struct =
-        SkyrimScripting::Messages::Get<SomeStruct*>(OTHER_PLUGIN_NAME, "GimmeYourStruct");
+        SkyrimScripting::Messages::Get<SomeStruct*>(OTHER_PLUGIN_NAME, "TheCoolStruct");
+
     if (plugin1Struct.has_value()) {
         SKSE::log::info(
-            "Received struct from Plugin 1: a={}, b='{}'", plugin1Struct.value()->a,
+            "[NEW] Received struct from Plugin 1: a={}, b='{}'", plugin1Struct.value()->a,
             plugin1Struct.value()->b
         );
     } else {
