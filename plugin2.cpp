@@ -9,6 +9,8 @@ const auto OTHER_PLUGIN_NAME = "Test plugin 1 for SkyrimScripting.Messages";
 
 SomeStruct plugin2Struct = {420, "Four-twenty"};
 
+OnGet("GimmeYourStruct") { return &plugin2Struct; }
+
 void on_all_plugins_loaded() {
     // Send a message to the other plugin
     SkyrimScripting::Messages::Send(OTHER_PLUGIN_NAME, "Hello from Plugin 2!");
@@ -24,13 +26,6 @@ void on_all_plugins_loaded() {
         );
     } else {
         SKSE::log::info("Failed to receive struct from Plugin 1");
-    }
-}
-
-OnMessage(SkyrimScripting::Messages::Message* message) {
-    SKSE::log::info("Received message from '{}': '{}'", message->sender(), message->text());
-    if (message->is_request() && strcmp(message->text(), "GimmeYourStruct") == 0) {
-        SkyrimScripting::Messages::Reply(message, &plugin2Struct);
     }
 }
 

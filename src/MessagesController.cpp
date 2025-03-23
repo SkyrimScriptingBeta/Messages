@@ -64,11 +64,12 @@ namespace SkyrimScripting::Messages {
 
     void MessagesController::HandleIncomingMessage(SKSE::MessagingInterface::Message* skseMessage) {
         if (skseMessage->type == SKYRIM_SCRIPTING_MESSAGE_TYPE) {
+            SKSE::log::info("Handling incoming message from '{}'", skseMessage->sender);
             if (auto* message = static_cast<Message*>(skseMessage->data)) {
                 message->set_sender(skseMessage->sender);
                 for (auto& messageListener : _messageListeners) messageListener(message);
                 if (message->is_response()) {
-                    SKSE::log::trace("Received response to Reply ID {}", message->reply_id());
+                    SKSE::log::trace("Received RESPONSE to Reply ID {}", message->reply_id());
                     auto it = _outboundRequests.find(message->reply_id());
                     if (it != _outboundRequests.end()) {
                         SKSE::log::trace(
@@ -78,6 +79,7 @@ namespace SkyrimScripting::Messages {
                         _outboundRequests.erase(it);
                     }
                 } else if (message->is_request()) {
+                    SKSE::log::trace("Received REQUEST for text '{}'", message->text());
                     auto it = _getHandlers.find(message->text());
                     if (it != _getHandlers.end()) {
                         auto response_value = it->second();
