@@ -16,7 +16,7 @@ namespace SkyrimScripting::Messages {
 
     template <typename T>
     inline std::future<T> GetAsync(
-        std::string_view recipient, std::string_view messageText,
+        std::string_view messageText, std::optional<std::string_view> recipient = std::nullopt,
         std::optional<std::function<void(T)>> callback = std::nullopt
     ) {
         auto promise = std::make_shared<std::promise<T>>();
@@ -26,7 +26,7 @@ namespace SkyrimScripting::Messages {
             auto message = make_message();
             message->set_text(messageText.data());
             MessagesController::GetSingleton().SendGetRequest(
-                recipient, std::move(message),
+                std::move(message), recipient,
                 [promise, callback](Message* message) {
                     if (auto* data = message->data()) {
                         auto dataAddress = reinterpret_cast<std::uintptr_t>(data);
@@ -50,15 +50,24 @@ namespace SkyrimScripting::Messages {
     }
 
     template <typename T>
-    inline std::optional<T> Get(
-        std::string_view recipient, std::string_view messageText, std::uint32_t timeoutMs = 5000
+    inline std::future<T> GetAsync(
+        std::string_view messageText, std::optional<std::function<void(T)>> callback = std::nullopt
     ) {
-        auto future = GetAsync<T>(recipient, messageText);
+        return GetAsync<T>(messageText, std::nullopt, callback);
+    }
+
+    template <typename T>
+    inline std::optional<T> Get(
+        std::string_view messageText, std::optional<std::string_view> recipient = std::nullopt,
+        std::uint32_t timeoutMs = 5000
+    ) {
+        auto future = GetAsync<T>(messageText, recipient);
         if (timeoutMs != 0) {
             auto status = future.wait_for(std::chrono::milliseconds(timeoutMs));
             if (status == std::future_status::timeout) {
                 SKSE::log::info(
-                    "Get request to '{}' ('{}') timed out (after {}ms)", recipient, messageText,
+                    "Get request to '{}' ('{}') timed out (after {}ms)",
+                    recipient.has_value() ? recipient.value() : "ALL PLUGINS", messageText,
                     timeoutMs
                 );
                 return {};

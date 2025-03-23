@@ -29,10 +29,12 @@ namespace SkyrimScripting::Messages {
     }
 
     bool MessagesController::SendGetRequest(
-        std::string_view recipient, std::unique_ptr<Message> message,
+        std::unique_ptr<Message> message, std::optional<std::string_view> recipient,
         std::function<void(Message*)> receiptCallback
     ) {
-        SKSE::log::trace("SendGetRequest() to {}", recipient);
+        SKSE::log::trace(
+            "SendGetRequest() to {}", recipient.has_value() ? recipient.value() : "ALL PLUGINS"
+        );
 
         auto callbackID = _nextCallbackID++;
         message->set_is_request();
@@ -46,17 +48,34 @@ namespace SkyrimScripting::Messages {
 
         auto* outboundRequestPtr = _outboundRequests[callbackID].get();
 
-        SKSE::log::trace(
-            "Dispatching GET request to '{}' with message '{}' [Reply ID {}]", recipient,
-            outboundRequestPtr->message->text(), callbackID
-        );
+        if (recipient.has_value())
+            SKSE::log::trace(
+                "Dispatching GET request to '{}' with message '{}' [Reply ID {}]",
+                recipient.has_value() ? recipient.value() : "ALL PLUGINS",
+                outboundRequestPtr->message->text(), callbackID
+            );
+        else
+            SKSE::log::trace(
+                "Dispatching GET request to ALL PLUGINS with message '{}' [Reply ID {}]",
+                outboundRequestPtr->message->text(), callbackID
+            );
+
+        auto* recipientName = recipient.has_value() ? recipient->data() : nullptr;
+
         if (SKSE::GetMessagingInterface()->Dispatch(
                 SKYRIM_SCRIPTING_MESSAGE_TYPE, (void*)outboundRequestPtr->message.get(),
-                sizeof(void*), recipient.data()
-            ))
+                sizeof(void*), recipientName
+            )) {
+            SKSE::log::trace(
+                "Dispatched GET request to '{}'",
+                recipient.has_value() ? recipient.value() : "ALL PLUGINS"
+            );
             return true;
-        else {
-            SKSE::log::trace("Failed to dispatch GET request to '{}'", recipient);
+        } else {
+            SKSE::log::trace(
+                "Failed to dispatch GET request to '{}'",
+                recipient.has_value() ? "ALL PLUGINS" : recipient.value()
+            );
             _outboundRequests.erase(callbackID);
             return false;
         }

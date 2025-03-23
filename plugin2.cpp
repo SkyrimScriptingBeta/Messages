@@ -11,13 +11,18 @@ SomeStruct plugin2Struct = {420, "Four-twenty"};
 
 OnGet("GimmeYourStruct") { return &plugin2Struct; }
 
+OnMessage(SkyrimScripting::Messages::Message* message) {
+    SKSE::log::debug(
+        "A message was sent from {} with text '{}'", message->sender(), message->text()
+    );
+}
+
 void on_all_plugins_loaded() {
     // Send a message to the other plugin
     SkyrimScripting::Messages::Send(OTHER_PLUGIN_NAME, "Hello from Plugin 2!");
 
     // This is BLOCKING, so be careful
-    auto plugin1Struct =
-        SkyrimScripting::Messages::Get<SomeStruct*>(OTHER_PLUGIN_NAME, "TheCoolStruct");
+    auto plugin1Struct = SkyrimScripting::Messages::Get<SomeStruct*>("TheCoolStruct");
 
     if (plugin1Struct.has_value()) {
         SKSE::log::info(

@@ -31,7 +31,7 @@ namespace SkyrimScripting::Messages {
         );
 
         bool SendGetRequest(
-            std::string_view recipient, std::unique_ptr<Message> message,
+            std::unique_ptr<Message> message, std::optional<std::string_view> recipient,
             std::function<void(Message*)> receiptCallback
         );
 
