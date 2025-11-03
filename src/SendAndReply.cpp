@@ -34,4 +34,11 @@ namespace SkyrimScripting::Messages {
         message->set_reply_id(replyId);
         Send(recipient, std::move(message));
     }
+
+    void Broadcast(std::string_view text, void* data) {
+        auto message = make_message();
+        message->set_text(text.data());
+        message->set_data(data);
+        Send(std::move(message));
+    }
 }

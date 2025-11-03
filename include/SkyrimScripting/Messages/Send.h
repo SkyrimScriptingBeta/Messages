@@ -15,4 +15,5 @@ namespace SkyrimScripting::Messages {
         std::string_view recipient, std::string_view text = "", void* data = nullptr,
         bool is_response = false, bool is_request = false, CallbackID replyId = 0
     );
+    void Broadcast(std::string_view text = "", void* data = nullptr);
 }
