@@ -1,5 +1,9 @@
 #pragma once
 
+#include <algorithm>
+#include <cctype>
+#include <string_view>
+
 #include "CallbackID.h"
 
 namespace SkyrimScripting::Messages {
@@ -23,5 +27,17 @@ namespace SkyrimScripting::Messages {
         virtual void set_is_response(bool value = true) = 0;
         virtual void set_is_request(bool value = true)  = 0;
         virtual void set_reply_id(CallbackID id)        = 0;
+
+        inline bool is_sender(std::string_view name, bool match_case = false) const {
+            std::string_view sender_view(sender());
+            if (match_case) return sender_view == name;
+            return std::equal(
+                sender_view.begin(), sender_view.end(), name.begin(), name.end(),
+                [](char a, char b) {
+                    return std::tolower(static_cast<unsigned char>(a)) ==
+                           std::tolower(static_cast<unsigned char>(b));
+                }
+            );
+        }
     };
 }
